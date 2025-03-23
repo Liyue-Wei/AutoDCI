@@ -1,15 +1,30 @@
+#coding=UTF-8
+start = False
+while(start==False):
+    try:
+        import os
+        import docx
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.service import Service
+        start = True
+
+    except ImportError:
+        print("ERROR : Essential modules not found")
+        from Extension_Modules import install
+        install.main()  
+        os.system("PAUSE") 
+
 from Extension_Modules import file_directory as fd
-import os
 import time
 import threading
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+
+import docx_test
 
 opt = Options()
 # opt.add_experimental_option("detach", True)
-opt.add_argument("--headless")
+# opt.add_argument("--headless")
 
 path = fd.path_function("\chromedriver-win64\chromedriver.exe")
 print(path)
@@ -26,17 +41,26 @@ def strIO(fileIN):
     element_strIN.clear()
     element_strOUT.clear()
 
-    element_strIN.send_keys(fileIN)
-    element_button.click()
+    element_strIN.send_keys(str(fileIN))
+    # element_button.click()
 
     fileOUT = element_strOUT.get_attribute("value")
-    while (fileOUT == ''):
-        fileOUT = element_strOUT.get_attribute("value")
+    start_time = time.time()
+    while fileOUT == '':
+        timer = time.time() - start_time
+        # print(timer)
+        if timer > 10:
+            raise TimeoutError("Error: Time OUT")
 
-    print(fileOUT)
+        fileOUT = element_strOUT.get_attribute("value")
+    
+    return fileOUT
 
 def main():
-    strIO("這是一份測試文件")
+    # print(strIO("這是一份測試文件"))
+    file = docx_test.IO()
+    print(file)
+    print(strIO(file))
 
 if __name__ == "__main__":
     main()
