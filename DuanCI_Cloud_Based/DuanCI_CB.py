@@ -20,11 +20,14 @@ from Extension_Modules import file_directory as fd
 import time
 import threading
 
+from Extension_Modules import File_IO
+
 opt = Options()
 # opt.add_experimental_option("detach", True)
 # opt.add_argument("--headless")
 
 path = fd.path_function("\chromedriver-win64\chromedriver.exe")
+
 print(path)
 driver = webdriver.Chrome(service=Service(path), options=opt)
 driver.get("https://ckip.iis.sinica.edu.tw/service/ckiptagger/")
@@ -40,7 +43,7 @@ def strIO(fileIN):
     element_strOUT.clear()
 
     element_strIN.send_keys(str(fileIN))
-    # element_button.click()
+    element_button.click()
 
     fileOUT = element_strOUT.get_attribute("value")
     start_time = time.time()
@@ -55,7 +58,11 @@ def strIO(fileIN):
     return fileOUT
 
 def main():
-    print(strIO("這是一份測試文件"))
+    # print(strIO("這是一份測試文件"))
+    index = File_IO.inFile(input())
+    print(index)
+    print(len(index))
+    # print(strIO(index))
 
 if __name__ == "__main__":
     main()
