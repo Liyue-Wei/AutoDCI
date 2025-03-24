@@ -20,8 +20,6 @@ from Extension_Modules import file_directory as fd
 import time
 import threading
 
-import docx_test
-
 opt = Options()
 # opt.add_experimental_option("detach", True)
 # opt.add_argument("--headless")
@@ -57,10 +55,7 @@ def strIO(fileIN):
     return fileOUT
 
 def main():
-    # print(strIO("這是一份測試文件"))
-    file = docx_test.IO()
-    print(file)
-    print(strIO(file))
+    print(strIO("這是一份測試文件"))
 
 if __name__ == "__main__":
     main()
