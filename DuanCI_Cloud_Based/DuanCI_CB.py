@@ -35,8 +35,12 @@ element_strOUT = driver.find_element(By.XPATH, "/html/body/textarea[5]")
 element_button = driver.find_element(By.XPATH, "/html/body/button")
 
 def initialize():
+    global element_strIN, element_strOUT, element_button
     driver.find_element(By.XPATH, "/html/body/label[4]/input").click()
     driver.find_element(By.XPATH, "/html/body/label[5]/input").click()
+    element_strIN = driver.find_element(By.XPATH, "/html/body/textarea[4]")
+    element_strOUT = driver.find_element(By.XPATH, "/html/body/textarea[5]")
+    element_button = driver.find_element(By.XPATH, "/html/body/button")
 
 def strIO(fileIN):
     print("strIO")
@@ -87,6 +91,7 @@ def split_into_parts(fileIN):
     return split_text
 
 def main():
+    initialize()
     file_folder = input("Please input the file folder: ")
     OpenFolder(file_folder)
     for file in Files_List:
@@ -94,9 +99,20 @@ def main():
         fileIN = fio.inFile(f"{file_folder}/{file}")
         # partition(fileIN)
         index = split_into_parts(fileIN)
-        
+        fileOUT = []
 
+        for i in range(len(index)):
+            print(i)
+            if (i % 15 == 0 and i != 0):
+                print("Refreshing")
+                driver.refresh()
+                initialize()
+                
+            # print(index[i])
+            fileOUT.append(strIO(index[i]))
 
+        fileOUT = '\n'.join(fileOUT)
+        fio.outFile(f"{file_folder}/{file}", fileOUT)
 
 if __name__ == "__main__":
     main()

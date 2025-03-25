@@ -32,6 +32,7 @@ def outFile(FilePath, index):
 
     with open(NewFilePath, 'w', encoding='utf-8') as file:
         file.write(index)
+        file.flush()
 
 # print(inFile(input()))
 # outFile(input())
