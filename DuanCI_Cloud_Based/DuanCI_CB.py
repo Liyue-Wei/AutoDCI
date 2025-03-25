@@ -3,7 +3,7 @@ start = False
 while(start==False):
     try:
         import os
-        import docx
+        import pyautogui
         from selenium import webdriver
         from selenium.webdriver.common.by import By
         from selenium.webdriver.chrome.options import Options
@@ -17,10 +17,8 @@ while(start==False):
         os.system("PAUSE") 
 
 from Extension_Modules import file_directory as fd
+from Extension_Modules import File_IO as fio
 import time
-import threading
-
-from Extension_Modules import File_IO
 
 opt = Options()
 # opt.add_experimental_option("detach", True)
@@ -34,11 +32,14 @@ driver.get("https://ckip.iis.sinica.edu.tw/service/ckiptagger/")
 
 element_strIN = driver.find_element(By.XPATH, "/html/body/textarea[4]")
 element_strOUT = driver.find_element(By.XPATH, "/html/body/textarea[5]")
-element_unSEL_1 = driver.find_element(By.XPATH, "/html/body/label[4]/input").click()
-element_unSEL_2 = driver.find_element(By.XPATH, "/html/body/label[5]/input").click()
 element_button = driver.find_element(By.XPATH, "/html/body/button")
 
+def initialize():
+    driver.find_element(By.XPATH, "/html/body/label[4]/input").click()
+    driver.find_element(By.XPATH, "/html/body/label[5]/input").click()
+
 def strIO(fileIN):
+    print("strIO")
     element_strIN.clear()
     element_strOUT.clear()
 
@@ -50,19 +51,52 @@ def strIO(fileIN):
     while fileOUT == '':
         timer = time.time() - start_time
         # print(timer)
-        if timer > 10:
+        if timer > 15:
             raise TimeoutError("Error: Time OUT")
 
         fileOUT = element_strOUT.get_attribute("value")
     
     return fileOUT
 
+def OpenFolder(file_folder):
+    print("Open Folder")
+    global Files_List
+
+    try:
+        Files_List = [f for f in os.listdir(file_folder) if os.path.isfile(os.path.join(file_folder, f))]
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        os.system("PAUSE")
+
+def split_into_parts(fileIN):
+    fileLength = len(fileIN)
+    print(fileLength)
+    if fileLength < 40000:
+        parts = 8
+        partSize = fileLength // parts
+
+    else:
+        parts = 8 * int(fileLength / 40000)
+        partSize = fileLength // parts
+        print(parts)
+        print(partSize)
+        
+    split_text = [fileIN[i * partSize:(i + 1) * partSize] for i in range(parts - 1)]
+    split_text.append(fileIN[(parts - 1) * partSize:])
+    return split_text
+
 def main():
-    # print(strIO("這是一份測試文件"))
-    index = File_IO.inFile(input())
-    print(index)
-    print(len(index))
-    # print(strIO(index))
+    file_folder = input("Please input the file folder: ")
+    OpenFolder(file_folder)
+    for file in Files_List:
+        print(file)
+        fileIN = fio.inFile(f"{file_folder}/{file}")
+        # partition(fileIN)
+        index = split_into_parts(fileIN)
+        
+
+
 
 if __name__ == "__main__":
     main()
