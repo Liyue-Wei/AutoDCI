@@ -3,7 +3,6 @@ start = False
 while(start==False):
     try:
         import os
-        import pyautogui
         from selenium import webdriver
         from selenium.webdriver.common.by import By
         from selenium.webdriver.chrome.options import Options
@@ -21,18 +20,11 @@ from Extension_Modules import File_IO as fio
 import time
 
 opt = Options()
-# opt.add_experimental_option("detach", True)
-# opt.add_argument("--headless")
-
 path = fd.path_function("\chromedriver-win64\chromedriver.exe")
 
 print(path)
 driver = webdriver.Chrome(service=Service(path), options=opt)
 driver.get("https://ckip.iis.sinica.edu.tw/service/ckiptagger/")
-
-element_strIN = driver.find_element(By.XPATH, "/html/body/textarea[4]")
-element_strOUT = driver.find_element(By.XPATH, "/html/body/textarea[5]")
-element_button = driver.find_element(By.XPATH, "/html/body/button")
 
 def initialize():
     global element_strIN, element_strOUT, element_button
@@ -47,14 +39,13 @@ def strIO(fileIN):
     element_strIN.clear()
     element_strOUT.clear()
 
-    element_strIN.send_keys(str(fileIN))
+    driver.execute_script("arguments[0].value = arguments[1];", element_strIN, str(fileIN))
     element_button.click()
 
     fileOUT = element_strOUT.get_attribute("value")
     start_time = time.time()
     while fileOUT == '':
         timer = time.time() - start_time
-        # print(timer)
         if timer > 15:
             raise TimeoutError("Error: Time OUT")
 
@@ -76,12 +67,12 @@ def OpenFolder(file_folder):
 def split_into_parts(fileIN):
     fileLength = len(fileIN)
     print(fileLength)
-    if fileLength < 40000:
-        parts = 8
+    if fileLength <= 50000:
+        parts = 10
         partSize = fileLength // parts
 
     else:
-        parts = 8 * int(fileLength / 40000)
+        parts = 10 * int(fileLength / 50000)
         partSize = fileLength // parts
         print(parts)
         print(partSize)
@@ -97,22 +88,15 @@ def main():
     for file in Files_List:
         print(file)
         fileIN = fio.inFile(f"{file_folder}/{file}")
-        # partition(fileIN)
         index = split_into_parts(fileIN)
         fileOUT = []
 
         for i in range(len(index)):
             print(i)
-            if (i % 15 == 0 and i != 0):
-                print("Refreshing")
-                driver.refresh()
-                initialize()
-                
-            # print(index[i])
-            fileOUT.append(strIO(index[i]))
+            fio.outFile(f"{file_folder}/{file}", strIO(index[i]))
+            time.sleep(0.0125)
 
-        fileOUT = '\n'.join(fileOUT)
-        fio.outFile(f"{file_folder}/{file}", fileOUT)
+        index = []
 
 if __name__ == "__main__":
     main()

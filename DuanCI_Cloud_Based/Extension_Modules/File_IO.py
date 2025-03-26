@@ -30,34 +30,6 @@ def outFile(FilePath, index):
     print(DirPath)
     print(NewFilePath)
 
-    with open(NewFilePath, 'w', encoding='utf-8') as file:
+    with open(NewFilePath, 'a', encoding='utf-8') as file:
         file.write(index)
         file.flush()
-
-# print(inFile(input()))
-# outFile(input())
-
-'''
-filename = str(input())
-outFile = open(filename, 'r')
-index = outFile.read()
-print(index)
-'''
-
-'''
-filename = str(input())
-outFile = open(filename, 'w')
-outFile.write("Hello from python fstream\n")
-outFile.flush()
-
-try:
-    while True:
-        outFile.write(input())
-        outFile.write('\n')
-        outFile.flush()
-
-except EOFError:
-    pass
-
-outFile.close()
-'''
