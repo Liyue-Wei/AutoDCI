@@ -83,7 +83,7 @@ def split_into_parts(fileIN):
 
 def main():
     initialize()
-    file_folder = input("Please input the file folder: ")
+    file_folder = input("Please input the file folder: ").replace("\\", "/").replace("\"", "")
     OpenFolder(file_folder)
     for file in Files_List:
         print(file)
